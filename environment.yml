@@ -19,5 +19,5 @@ dependencies:
   - tensorboard=2.11.0
   - torchvision=0.14.0
   - pip:
-    - pycocoevalcap==1.2
+    - git+https://github.com/regnujAx/pycocoevalcap
     - pycocotools==2.0.6
