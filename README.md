@@ -1,28 +1,42 @@
 # PyTorch Models for GVE and LRCN
-PyTorch implementation of the following models:
+PyTorch implementation (adapted from [salaniz](https://github.com/salaniz/pytorch-gve-lrcn)) of the following models:
 * Long-term Recurrent Convolutional Networks (LRCN) [1]
 * Generating Visual Explanations (GVE) [2]
 
 ## Installation
-This implementation uses Python 3, PyTorch and pycocoevalcap (https://github.com/salaniz/pycocoevalcap).  
+This implementation uses Python 3, PyTorch and pycocoevalcap (https://github.com/regnujAx/pycocoevalcap).  
 All dependencies can be installed into a conda environment with the provided environment.yml file.
 
 1. Clone the repository
 ```shell
-git clone https://github.com/salaniz/pytorch-gve-lrcn.git
+git clone https://github.com/regnujAx/pytorch-gve-lrcn.git
 cd pytorch-gve-lrcn
 ```
 2. Create conda environment
 ```shell
 conda env create -f environment.yml
 ```
-3. Activate environment
+3. Activate conda environment
 ```shell
 conda activate gve-lrcn
 ```
-4. Download scripts are provided for the datasets:
+4. To download the COCO and the CUB datasets, use the provided scripts:
 * `coco-data-setup-linux.sh` downloads COCO 2014: http://cocodataset.org/ [3]
 * `cub-data-setup-linux.sh` downloads preprocessed features of CUBS-200-2011: http://www.vision.caltech.edu/visipedia/CUB-200-2011.html [4]
+
+## Alternative Installation
+If you don't want to use a conda environment you can run
+```
+docker build . -t gve-lrcn --no-cache
+``` 
+This builds a [Docker](https://www.docker.com/) image from the provided Dockerfile with the tag "gve-lrcn". This Dockerfile installs only the dependencies and not the code of this repository. You have to mount this repository to the Docker container if you run it, e.g.:
+```
+docker run -it -v "path/to/pytorch-gve-lrcn:/gve-lrcn" gve-lrcn /bin/bash
+```
+The last argument `/bin/bash` makes it possible to enter the Docker container from the shell where you execute the command. After this, you have to go in the gve-lrcn directory before you can follow the next steps:
+```
+cd gve-lrcn
+```
 
 ## Usage
 1. Train LRCN on COCO

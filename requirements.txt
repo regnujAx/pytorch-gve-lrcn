@@ -1,0 +1,11 @@
+# This file is for using the Dockerfile.
+
+cython==0.29.32
+future==0.18.2
+gdown==4.5.4
+matplotlib==3.6.2
+numpy==1.23.5
+pillow==9.2.0
+tensorboard==2.11.0
+git+https://github.com/regnujAx/pycocoevalcap
+pycocotools==2.0.6
