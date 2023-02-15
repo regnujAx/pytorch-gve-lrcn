@@ -111,7 +111,7 @@ def create_im_dicts(descriptions):
 def save_descriptions(save_dict, save_tag):
   save_path = data_prefix + 'descriptions_' + save_tag + '.json'
   save_json(save_dict, save_path)
-  print('Saved captions to %s.\n' % save_path)
+  print('Saved captions to %s.\n' % save_path, flush=True)
 
 if __name__ == '__main__':
 

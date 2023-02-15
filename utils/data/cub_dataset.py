@@ -27,13 +27,8 @@ class CubDataset(CocoDataset):
     image_path = ''
     image_features_path = 'CUB_feature_dict.p'
     caption_path = 'descriptions_bird.{}.fg.json'
-    #caption_train_path = 'descriptions_bird.train_noCub.fg.json'
-    #caption_val_path = 'descriptions_bird.val.fg.json'
-    #caption_test_path = 'descriptions_bird.test.fg.json'
     vocab_file_name = 'cub_vocab.pkl'
     tokens_file_name = 'cub_tokens_{}.pkl'
-    #tokens_val_file_name = 'cub_tokens_val.pkl'
-    #tokens_test_file_name = 'cub_tokens_test.pkl'
     class_labels_path = 'CUB_label_dict.p'
 
     # Available data splits (must contain 'train')

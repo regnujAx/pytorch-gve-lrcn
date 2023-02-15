@@ -57,7 +57,11 @@ class PTBTokenizer:
         return tokenized_caption
 
     def tokenize(self, anns):
-        cmd = ['java', '-cp', STANFORD_CORENLP_3_4_1_JAR, \
+        # Without '-XX:-UseContainerSupport' OpenJDK will add
+        # "[0.001s][warning][os,container] Duplicate cpuset controllers detected. Picking /sys/fs/cgroup/cpuset, skipping /sys/fs/cgroup/cpuset."
+        # to the stdout so it will add this to the variable lines.
+        # The assertion in line 100 will then fail because of that.
+        cmd = ['java', '-XX:-UseContainerSupport', '-cp', STANFORD_CORENLP_3_4_1_JAR, \
                 'edu.stanford.nlp.process.PTBTokenizer', \
                 '-preserveLines', '-lowerCase']
 

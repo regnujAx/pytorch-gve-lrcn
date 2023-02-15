@@ -22,7 +22,7 @@ conda activate gve-lrcn
 ```
 4. To download the COCO and the CUB datasets, use the provided scripts:
 * `coco-data-setup-linux.sh` downloads COCO 2014: http://cocodataset.org/ [3]
-* `cub-data-setup-linux.sh` downloads preprocessed features of CUBS-200-2011: http://www.vision.caltech.edu/visipedia/CUB-200-2011.html [4]
+* `cub-data-setup-linux.sh` downloads preprocessed features of CUBS-200-2011: http://www.vision.caltech.edu/datasets/cub_200_2011/ [4]
 
 ## Alternative Installation
 If you don't want to use a conda environment you can run

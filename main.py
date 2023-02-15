@@ -39,7 +39,7 @@ if __name__ == "__main__":
         json.dump(vars(args), f)
 
     # Data preparation
-    print("Preparing Data ...")
+    print("Preparing Data ...", flush=True)
     split = get_split_str(args.train, bool(args.eval_ckpt), args.dataset)
     data_prep = DataPreparation(args.dataset, args.data_path)
     dataset, data_loader = data_prep.get_dataset_and_loader(split, args.pretrained_model,
@@ -52,14 +52,14 @@ if __name__ == "__main__":
 
     print()
 
-    print("Loading Model ...")
+    print("Loading Model ...", flush=True)
     ml = ModelLoader(args, dataset)
     model = getattr(ml, args.model)()
-    print(model, "\n")
+    print(model, "\n", flush=True)
 
     # TODO: Remove and handle with checkpoints
     if not args.train:
-        print("Loading Model Weights ...")
+        print("Loading Model Weights ...", flush=True)
         evaluation_state_dict = torch.load(args.eval_ckpt)
         model_dict = model.state_dict(full_dict=True)
         model_dict.update(evaluation_state_dict)
@@ -81,14 +81,20 @@ if __name__ == "__main__":
         evaluator.train = False
 
     if args.train:
-        print("Training ...")
+        print("Training ...", flush=True)
     else:
-        print("Evaluating ...")
+        print("Evaluating ...", flush=True)
         vars(args)["num_epochs"] = 1
 
 
     # Start training/evaluation
     max_score = 0
+    file = open("evaluation.txt", "a")
+    today = datetime.now()
+    currentDateTime = today.strftime("%b-%d-%Y-%H-%M-%S")
+    file.write(str(currentDateTime))
+    file.write("\nModel is {}\n".format(args.model))
+    file.close()
     while trainer.curr_epoch < args.num_epochs:
         if args.train:
             trainer.train_epoch()
@@ -99,9 +105,7 @@ if __name__ == "__main__":
             checkpoint_path = os.path.join(job_path, checkpoint_name)
         
             file = open("evaluation.txt", "a")
-            today = datetime.now()
-            currentDateTime = today.strftime("%b-%d-%Y-%H-%M-%S")
-            file.write("%s Epoch %i:\n"%(currentDateTime, trainer.curr_epoch))
+            file.write("\nEpoch {}:\n".format(trainer.curr_epoch))
             file.close()
 
             model.eval()
@@ -125,10 +129,10 @@ if __name__ == "__main__":
                 "training_checkpoint.pth"))
             if score > max_score:
                 max_score = score
-                link_name = "best-ckpt_" + job_string + ".pth"
+                link_name = "best-ckpt.pth"
                 link_path = os.path.join(job_path, link_name)
                 if os.path.islink(link_path):
-                    print(link_path, "is a symbolic link")
+                    print(link_path, "is a symbolic link", flush=True)
                     os.unlink(link_path)
                 # Opening a directory is not possible on Windows, but that is not
                 # a problem since Windows does not need to fsync the directory in
@@ -138,7 +142,7 @@ if __name__ == "__main__":
                     dir_fd = None
                 else:
                     dir_fd = os.open(os.path.dirname(link_path), os.O_RDONLY)
-                os.symlink(os.path.basename(checkpoint_path), link_name, dir_fd=dir_fd)
+                os.symlink(os.path.basename(checkpoint_path), link_path, dir_fd=dir_fd)
                 if platform.system() != "Windows":
                     os.close(dir_fd)
 
@@ -155,3 +159,7 @@ if __name__ == "__main__":
     elapsed_time = time.time() - start_time
     time_string = time.strftime("%H:%M:%S", time.gmtime(elapsed_time))
     print("\nElapsed time:", time_string)
+
+    file = open("evaluation.txt", "a")
+    file.write("\nElapsed time: {}".format(time_string))
+    file.close()
