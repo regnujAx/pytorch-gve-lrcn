@@ -97,16 +97,16 @@ if __name__ == "__main__":
     file.close()
     while trainer.curr_epoch < args.num_epochs:
         if args.train:
+            file = open("evaluation.txt", "a")
+            file.write("\nEpoch {}:\n".format(trainer.curr_epoch))
+            file.close()
+
             trainer.train_epoch()
 
 
             # Eval & Checkpoint
             checkpoint_name = "ckpt-e{}".format(trainer.curr_epoch)
             checkpoint_path = os.path.join(job_path, checkpoint_name)
-        
-            file = open("evaluation.txt", "a")
-            file.write("\nEpoch {}:\n".format(trainer.curr_epoch))
-            file.close()
 
             model.eval()
             result = evaluator.train_epoch()
@@ -142,7 +142,7 @@ if __name__ == "__main__":
                     dir_fd = None
                 else:
                     dir_fd = os.open(os.path.dirname(link_path), os.O_RDONLY)
-                os.symlink(os.path.basename(checkpoint_path), link_path, dir_fd=dir_fd)
+                os.symlink(os.path.basename(checkpoint_path), link_name, dir_fd=dir_fd)
                 if platform.system() != "Windows":
                     os.close(dir_fd)
 
