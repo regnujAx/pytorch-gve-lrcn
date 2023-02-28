@@ -35,6 +35,16 @@ class SCTrainer:
         result = []
 
         for i, (images, word_inputs, word_targets, lengths, ids, labels) in enumerate(self.data_loader):
+            # Mapping of class labels for correct calculations
+            classes = list(set(map(int, self.dataset.class_labels.values())))
+            labels_list = labels.tolist()
+            mapped_labels = []
+            for index in labels_list:
+                mapped_labels.append(classes.index(index + 1))
+
+            labels_tensor = torch.Tensor(mapped_labels)
+            labels = labels_tensor.type(torch.LongTensor)
+
             # Prepare mini-batch dataset
             if self.train:
                 word_targets = word_targets.to(self.device)

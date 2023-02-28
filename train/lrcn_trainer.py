@@ -44,6 +44,17 @@ class LRCNTrainer:
         result = []
 
         for i, (image_input, word_inputs, word_targets, lengths, ids, *excess) in enumerate(self.data_loader):
+            # Mapping of class labels for correct calculations
+            classes = list(set(map(int, self.dataset.class_labels.values())))
+            for t in excess:
+                labels_list = t.tolist()
+                mapped_labels = []
+                for index in labels_list:
+                    mapped_labels.append(classes.index(index + 1))
+
+            labels_tensor = torch.Tensor(mapped_labels)
+            labels = labels_tensor.type(torch.LongTensor)
+
             # Prepare mini-batch dataset
             image_input = image_input.to(self.device)
 
@@ -53,14 +64,14 @@ class LRCNTrainer:
                 word_targets = pack_padded_sequence(word_targets, lengths, batch_first=True)[0]
 
                 loss = self.train_step(image_input, word_inputs, word_targets,
-                        lengths, *excess)
+                        lengths, labels)
                 result.append(loss.data.item())
 
                 step = self.curr_epoch * self.total_steps + i + 1
                 self.logger.scalar_summary('batch_loss', loss.data.item(), step)
 
             else:
-                generated_captions = self.eval_step(image_input, ids, *excess)
+                generated_captions = self.eval_step(image_input, ids, labels)
                 result.extend(generated_captions)
 
             # TODO: Add proper logging
