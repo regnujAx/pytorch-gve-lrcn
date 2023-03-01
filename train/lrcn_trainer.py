@@ -94,13 +94,6 @@ class LRCNTrainer:
 
         if self.train:
             self.logger.scalar_summary('epoch_loss', np.mean(result), self.curr_epoch)
-        else:
-            result = np.sum(result, axis=0)
-            result = result[1] / result[0]
-            print("Evaluation Accuracy: {}".format(result), flush=True)
-            file = open("evaluation.txt", 'a')
-            file.write("\nEvaluation Accuracy: {}".format(result))
-            file.close()
 
         return result
 
