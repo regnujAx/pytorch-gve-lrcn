@@ -81,7 +81,12 @@ class LRCNTrainer:
                     self.num_epochs, i, self.total_steps), end='')
                 if self.train:
                     print(", Loss: {:.4f}, Perplexity: {:5.4f}".format(loss.data.item(),
-                        np.exp(loss.data.item())), end='')
+                        np.exp(loss.data.item())), end='', flush=True)
+                    file = open("evaluation.txt", 'a')
+                    file.write("\nEpoch [{}/{}], Step [{}/{}], Loss: {:.4f}, Perplexity: {:5.4f}".format(
+                        self.curr_epoch, self.num_epochs, i, self.total_steps, loss.data.item(),
+                        np.exp(loss.data.item())))
+                    file.close()
                 print()
 
 
@@ -89,6 +94,13 @@ class LRCNTrainer:
 
         if self.train:
             self.logger.scalar_summary('epoch_loss', np.mean(result), self.curr_epoch)
+        else:
+            result = np.sum(result, axis=0)
+            result = result[1] / result[0]
+            print("Evaluation Accuracy: {}".format(result), flush=True)
+            file = open("evaluation.txt", 'a')
+            file.write("\nEvaluation Accuracy: {}".format(result))
+            file.close()
 
         return result
 

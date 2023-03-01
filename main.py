@@ -103,7 +103,6 @@ if __name__ == "__main__":
 
             trainer.train_epoch()
 
-
             # Eval & Checkpoint
             checkpoint_name = "ckpt-e{}".format(trainer.curr_epoch)
             checkpoint_path = os.path.join(job_path, checkpoint_name)
@@ -128,11 +127,14 @@ if __name__ == "__main__":
             torch.save(checkpoint, os.path.join(job_path,
                 "training_checkpoint.pth"))
             if score > max_score:
+                print("The current model of epoch {} with a score of {} is the best.".format(trainer.curr_epoch, score))
+                file = open("evaluation.txt", "a")
+                file.write("\nThe current model of epoch {} with a score of {} is the best.\n".format(trainer.curr_epoch, score))
+                file.close()
                 max_score = score
                 link_name = "best-ckpt.pth"
                 link_path = os.path.join(job_path, link_name)
                 if os.path.islink(link_path):
-                    print(link_path, "is a symbolic link", flush=True)
                     os.unlink(link_path)
                 # Opening a directory is not possible on Windows, but that is not
                 # a problem since Windows does not need to fsync the directory in
@@ -161,5 +163,5 @@ if __name__ == "__main__":
     print("\nElapsed time:", time_string)
 
     file = open("evaluation.txt", "a")
-    file.write("\nElapsed time: {}".format(time_string))
+    file.write("\nElapsed time: {}\n\n".format(time_string))
     file.close()
