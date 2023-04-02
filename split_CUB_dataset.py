@@ -14,8 +14,8 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument('--classes', type=str, default='./classes.txt',
                     help='path to the original classes.txt of the CUB_200_2011 dataset [default is ./classes.txt]')
-parser.add_argument('--data', type=str, default='./data',
-                    help='name of the directory that contains the data files from Hendricks et al. [default is ./data]')
+parser.add_argument('--data', type=str, default='./data/cub',
+                    help='name of the directory that contains the data files from Hendricks et al. [default is ./data/cub]')
 parser.add_argument('--dir', type=str, default='./data/cub',
                     help='name of the directory that will contain the split data files [default is ./data/cub]')
 parser.add_argument('--ratio', type=float, default=0.5,
@@ -26,8 +26,6 @@ class_file = args.classes
 data_dir = args.data
 dir = args.dir
 ratio = args.ratio
-cwd = os.getcwd()
-path = os.path.join(cwd, dir)
 
 if not os.path.exists(class_file):
     print(f'File {class_file} is not in this directory. You need the file in the same directory like this script.')
@@ -37,8 +35,9 @@ if not (ratio > 0 and ratio < 1):
     print(f'A ratio of {ratio} is not valid. Please use a ratio greater than 0 or less than 1.')
     quit()
 
-if not os.path.exists(path):
-   os.makedirs(path)
+if not os.path.exists(dir):
+   os.makedirs(dir)
+
 
 # Split the classes with a ratio
 classes = pd.read_csv(class_file, header=None, sep=' ')
@@ -51,8 +50,8 @@ split_1 = split_1.sort_index()
 
 split_2 = classes.drop(split_1.index)
 
-split_1.to_csv(os.path.join(path, 'split_1.txt'), header=None, index=None, sep=' ')
-split_2.to_csv(os.path.join(path, 'split_2.txt'), header=None, index=None, sep=' ')
+split_1.to_csv(os.path.join(dir, 'split_1.txt'), header=None, index=None, sep=' ')
+split_2.to_csv(os.path.join(dir, 'split_2.txt'), header=None, index=None, sep=' ')
 
 
 # Split the train, test and val sets
@@ -73,9 +72,9 @@ for file in files:
         else:
             data_2.append(data)
 
-    with open(os.path.join(path, f'{file}_1.txt'), 'w') as f:
+    with open(os.path.join(dir, f'{file}_1.txt'), 'w') as f:
         f.write('\n'.join(data_1))
-    with open(os.path.join(path, f'{file}_2.txt'), 'w') as f:
+    with open(os.path.join(dir, f'{file}_2.txt'), 'w') as f:
         f.write('\n'.join(data_2))
 
 
@@ -94,7 +93,7 @@ for file in pickle_files:
         else:
             objects_2[key] = value
 
-    with open(os.path.join(path, f'{file}_1.p'), 'wb') as f:
+    with open(os.path.join(dir, f'{file}_1.p'), 'wb') as f:
         pickle.dump(objects_1, f)
-    with open(os.path.join(path, f'{file}_2.p'), 'wb') as f:
+    with open(os.path.join(dir, f'{file}_2.p'), 'wb') as f:
         pickle.dump(objects_2, f)
