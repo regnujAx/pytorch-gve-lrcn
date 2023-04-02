@@ -63,6 +63,26 @@ python main.py --model gve --dataset cub --eval ./checkpoints/gve-cub-D<date>-T<
 ```
 Note: Since COCO does not come with test set annotations, this script evaluates on the validation set when run on the COCO dataset
 
+## Alternative Usage
+If you want to use a subset of the CUB dataset from Hendricks et al., you can run 
+```
+python split_CUB_dataset.py
+```
+This script has the following default parameters:
+```
+classes                       ./classes.txt
+data                          ./data
+dir                           CUB-data
+ratio                         0.5
+```
+After the split_CUB_dataset.py script, you have to run
+```
+python utils/cub_preprocess_captions.py --description_type bird --splits data/cub/train_1.txt,data/cub/val_1.txt,data/cub/test_1.txt
+```
+to get the other needed data files. Change the `1`s to `2`s in the above command if you want to use the other train, val, and test files.
+
+Note: If you are using a subset of the CUB dataset, you have to rename the data files or change the filenames in ./utils/data/cub_dataset.py. You can then proceed as described under Usage.
+
 
 ### Default parameters
 ```
