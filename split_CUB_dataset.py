@@ -12,12 +12,12 @@ pickle_files = ['CUB_feature_dict', 'CUB_label_dict']
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument('--classes', type=str, default='classes.txt',
+parser.add_argument('--classes', type=str, default='./classes.txt',
                     help='path to the original classes.txt of the CUB_200_2011 dataset [default is ./classes.txt]')
-parser.add_argument('--data', type=str, default='data',
+parser.add_argument('--data', type=str, default='./data',
                     help='name of the directory that contains the data files from Hendricks et al. [default is ./data]')
-parser.add_argument('--dir', type=str, default='CUB-data',
-                    help='name of the directory that will contain the split data files [default is CUB-data-{ratio}]')
+parser.add_argument('--dir', type=str, default='./data/cub',
+                    help='name of the directory that will contain the split data files [default is ./data/cub]')
 parser.add_argument('--ratio', type=float, default=0.5,
                     help='ratio of splitting between 0 and 1 (e.g., use 0.25 if you want to use only a quarter) [default is 0.5]')
 
@@ -27,10 +27,14 @@ data_dir = args.data
 dir = args.dir
 ratio = args.ratio
 cwd = os.getcwd()
-path = os.path.join(cwd, f'{dir}-{ratio}')
+path = os.path.join(cwd, dir)
 
 if not os.path.exists(class_file):
-    print('File {} is not in this directory. You need the file in the same directory like this script.'.format(class_file))
+    print(f'File {class_file} is not in this directory. You need the file in the same directory like this script.')
+    quit()
+
+if not (ratio > 0 and ratio < 1):
+    print(f'A ratio of {ratio} is not valid. Please use a ratio greater than 0 or less than 1.')
     quit()
 
 if not os.path.exists(path):
