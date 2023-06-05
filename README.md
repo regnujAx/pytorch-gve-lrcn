@@ -61,7 +61,7 @@ python main.py --model gve --dataset cub --sc-ckpt ./data/cub/sentence_classifie
 ```
 python main.py --model gve --dataset cub --eval ./checkpoints/gve-cub-D<date>-T<time>-G<GPUid>/best-ckpt.pth
 ```
-Note: Since COCO does not come with test set annotations, this script evaluates on the validation set when run on the COCO dataset
+Note: Since COCO does not come with test set annotations, this script evaluates on the validation set when run on the COCO dataset.
 
 ## Alternative Usage
 If you want to use a subset of the CUB dataset from Hendricks et al., you can run 

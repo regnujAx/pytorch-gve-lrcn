@@ -23,6 +23,10 @@ if __name__ == "__main__":
     # Print arguments
     utils.arg_parser.print_args(args)
 
+    if args.transfer_learning and not args.weights_ckpt:
+        print("Be sure to pass weights for Transfer Learning.")
+        quit()
+
     device = torch.device("cuda:{}".format(args.cuda_device) if
             torch.cuda.is_available() and not args.disable_cuda else "cpu")
 
@@ -52,10 +56,14 @@ if __name__ == "__main__":
 
     print()
 
+    # Get model lrcn, gve or sc from models/model_loader.py (depends on args)
     print("Loading Model ...", flush=True)
     ml = ModelLoader(args, dataset)
     model = getattr(ml, args.model)()
     print(model, "\n", flush=True)
+
+    if args.transfer_learning and args.weights_ckpt:
+        print("Initialize Transfer Learning")
 
     # TODO: Remove and handle with checkpoints
     if not args.train:

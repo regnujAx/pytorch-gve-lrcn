@@ -1,19 +1,6 @@
 import os
-from collections import Counter
-from enum import Enum
 import pickle
-import json
-from PIL import Image
-
 import torch
-import torch.utils.data as data
-import numpy as np
-from pycocotools.coco import COCO
-from pycocoevalcap.eval import COCOEvalCap
-#import nltk
-
-from utils.vocabulary import Vocabulary
-from utils.tokenizer.ptbtokenizer import PTBTokenizer
 
 from .coco_dataset import CocoDataset
 

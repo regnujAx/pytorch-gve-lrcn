@@ -31,7 +31,7 @@ def get_args():
                         help="deep learning model",
                         choices=['lrcn', 'gve', 'sc'])
     parser.add_argument('--dataset', type=str, default='coco',
-                        choices=['coco', 'cub'])
+                        choices=['coco', 'cub', 'cub1', 'cub2'])
     parser.add_argument('--pretrained-model', type=str, default='vgg16',
                         help="[LRCN] name of pretrained model for image features",
                         choices=PretrainedModel.SUPPORTED_MODEL_NAMES)
@@ -55,6 +55,8 @@ def get_args():
 
     parser.add_argument('--eval', type=str,
                         help="path of checkpoint to be evaluated")
+
+    parser.add_argument('--transfer-learning', default=False, action='store_true')
 
     args = parser.parse_args()
 

@@ -1,6 +1,6 @@
 # Project-related
 checkpoints
-/data/
+/data*/
 pycocotools/
 pycocoevalcap/
 
@@ -8,4 +8,5 @@ pycocoevalcap/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 
-evaluation.txt
+*.txt
+*.pkl
