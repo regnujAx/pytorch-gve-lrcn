@@ -1,11 +1,6 @@
-# Python packages
 import os
-
-# Third party packages
 import torch
-import torchvision.transforms as transforms
 
-# Local packages
 from .coco_dataset import CocoDataset
 from .cub_dataset import CubDataset
 from .cub_dataset_1 import CubDataset1
@@ -51,10 +46,8 @@ class DataPreparation:
 
         return data_loader
 
-
     def get_dataset_and_loader(self, split='train', vision_model=None,
             vocab=None, tokens=None, batch_size=128, num_workers=4):
         dataset = self.get_dataset(split, vision_model, vocab, tokens)
         loader = self.get_loader(dataset, batch_size, num_workers)
         return dataset, loader
-

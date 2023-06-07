@@ -1,18 +1,20 @@
-import time
-import os
 import json
+import os
 import platform
+import sys
+import time
+import torch
+
 from datetime import datetime
+
+import utils.arg_parser
 
 from models.model_loader import ModelLoader
 from train.trainer_loader import TrainerLoader
 from utils.data.data_prep import DataPreparation
-import utils.arg_parser
 from utils.logger import Logger
 from utils.misc import get_split_str
 
-
-import torch
 
 if __name__ == "__main__":
 
@@ -24,8 +26,7 @@ if __name__ == "__main__":
     utils.arg_parser.print_args(args)
 
     if args.transfer_learning and not args.weights_ckpt:
-        print("Be sure to pass weights for Transfer Learning.")
-        quit()
+        sys.exit("Be sure to pass pretrained weights for Transfer Learning.")
 
     device = torch.device("cuda:{}".format(args.cuda_device) if
             torch.cuda.is_available() and not args.disable_cuda else "cpu")
@@ -97,7 +98,8 @@ if __name__ == "__main__":
 
     # Start training/evaluation
     max_score = 0
-    file = open("evaluation.txt", "a")
+    eval_filename = "evaluation_{}_{}.txt".format(args.model, args.dataset)
+    file = open(eval_filename, "a")
     today = datetime.now()
     currentDateTime = today.strftime("%b-%d-%Y-%H-%M-%S")
     file.write(str(currentDateTime))
@@ -105,7 +107,7 @@ if __name__ == "__main__":
     file.close()
     while trainer.curr_epoch < args.num_epochs:
         if args.train:
-            file = open("evaluation.txt", "a")
+            file = open(eval_filename, "a")
             file.write("\nEpoch {}:\n".format(trainer.curr_epoch))
             file.close()
 
@@ -136,7 +138,7 @@ if __name__ == "__main__":
                 "training_checkpoint.pth"))
             if score > max_score:
                 print("The current model of epoch {} with a score of {} is the best.".format(trainer.curr_epoch, score))
-                file = open("evaluation.txt", "a")
+                file = open(eval_filename, "a")
                 file.write("\nThe current model of epoch {} with a score of {} is the best.\n".format(trainer.curr_epoch, score))
                 file.close()
                 max_score = score
@@ -170,6 +172,6 @@ if __name__ == "__main__":
     time_string = time.strftime("%H:%M:%S", time.gmtime(elapsed_time))
     print("\nElapsed time:", time_string)
 
-    file = open("evaluation.txt", "a")
+    file = open(eval_filename, "a")
     file.write("\nElapsed time: {}\n\n".format(time_string))
     file.close()

@@ -7,11 +7,9 @@ def get_args():
     parser = argparse.ArgumentParser()
 
     # General arguments
-    parser.add_argument('--data-path', type=str,
-                        default='./data',
+    parser.add_argument('--data-path', type=str, default='./data',
                         help="root path of all data")
-    parser.add_argument('--checkpoint-path', type=str,
-                        default='./checkpoints',
+    parser.add_argument('--checkpoint-path', type=str, default='./checkpoints',
                         help="path checkpoints are stored or loaded")
     parser.add_argument('--log-step', type=int , default=10,
                         help="step size for prining logging information")
@@ -77,7 +75,6 @@ def get_args():
         arg_vars["torch_seed"] = torch.initial_seed()
 
     return args
-
 
 def print_args(args):
     space = 30

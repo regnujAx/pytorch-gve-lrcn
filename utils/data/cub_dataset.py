@@ -32,12 +32,10 @@ class CubDataset(CocoDataset):
             self.load_img_features(self.img_features_path)
             self.input_size = next(iter(self.img_features.values())).shape[0]
 
-
     def load_img_features(self, img_features_path):
         with open(img_features_path, 'rb') as f:
             feature_dict = pickle.load(f, encoding='latin1')
         self.img_features = feature_dict
-
 
     def load_class_labels(self, class_labels_path):
         with open(class_labels_path, 'rb') as f:

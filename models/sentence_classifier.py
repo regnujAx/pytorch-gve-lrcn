@@ -4,8 +4,6 @@ import torch.nn.functional as F
 from torch.nn.utils.rnn import pack_padded_sequence
 from torch.nn.utils.rnn import pad_packed_sequence
 
-from .pretrained_models import PretrainedModel
-
 class SentenceClassifier(nn.Module):
     def __init__(self, word_embed_size, hidden_size, vocab_size, num_classes,
             dropout_prob=0.5):

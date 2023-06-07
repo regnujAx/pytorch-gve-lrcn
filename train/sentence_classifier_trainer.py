@@ -1,8 +1,5 @@
-import os
-
 import torch
 import torch.nn as nn
-from torch.nn.utils.rnn import pack_padded_sequence
 import numpy as np
 
 class SCTrainer:
@@ -16,6 +13,7 @@ class SCTrainer:
         self.train = args.train
         self.logger = logger
         self.device = device
+        self.eval_filename = "evaluation_{}_{}.txt".format(model, dataset)
 
         model.to(self.device)
 
@@ -70,13 +68,12 @@ class SCTrainer:
                 if self.train:
                     print(", Loss: {:.4f}, Perplexity: {:5.4f}".format(loss.data.item(),
                                 np.exp(loss.data.item())), end='', flush=True)
-                    file = open("evaluation.txt", 'a')
+                    file = open(self.eval_filename, 'a')
                     file.write("\nEpoch [{}/{}], Step [{}/{}], Loss: {:.4f}, Perplexity: {:5.4f}".format(
                                 self.curr_epoch, self.num_epochs, i, self.total_steps, loss.data.item(),
                                 np.exp(loss.data.item())))
                     file.close()
                 print()
-
 
         self.curr_epoch += 1
 
@@ -86,13 +83,11 @@ class SCTrainer:
             result = np.sum(result, axis=0)
             result = result[1] / result[0]
             print("Evaluation Accuracy: {}".format(result), flush=True)
-            file = open("evaluation.txt", 'a')
+            file = open(self.eval_filename, 'a')
             file.write("\nEvaluation Accuracy: {}".format(result))
             file.close()
 
-
         return result
-
 
     def train_step(self, word_targets, class_labels, lengths):
         # Forward, Backward and Optimize
@@ -103,7 +98,6 @@ class SCTrainer:
         self.optimizer.step()
 
         return loss
-
 
     def eval_step(self, word_targets, class_labels, lengths):
         outputs = self.model(word_targets, lengths)
