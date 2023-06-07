@@ -13,7 +13,7 @@ class SCTrainer:
         self.train = args.train
         self.logger = logger
         self.device = device
-        self.eval_filename = "evaluation_{}_{}.txt".format(model, dataset)
+        self.eval_filename = "evaluation_{}_{}.txt".format(args.model, args.dataset)
 
         model.to(self.device)
 

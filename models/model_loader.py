@@ -18,8 +18,7 @@ class ModelLoader:
 
         layers_to_truncate = self.args.layers_to_truncate
 
-        lrcn = LRCN(pretrained_model, embedding_size, hidden_size, vocab_size,
-                layers_to_truncate)
+        lrcn = LRCN(pretrained_model, embedding_size, hidden_size, vocab_size, layers_to_truncate)
 
         return lrcn
 
@@ -39,15 +38,12 @@ class ModelLoader:
             param.requires_grad = False
         sc.eval()
 
-        gve = GVE(input_size, embedding_size, hidden_size, vocab_size, sc,
-                num_classes)
+        gve = GVE(input_size, embedding_size, hidden_size, vocab_size, sc, num_classes)
 
         if self.args.weights_ckpt:
             gve.load_state_dict(torch.load(self.args.weights_ckpt))
 
         return gve
-
-
 
     def sc(self):
         # Make sure dataset returns labels
@@ -58,7 +54,6 @@ class ModelLoader:
         vocab_size = len(self.dataset.vocab)
         num_classes = self.dataset.num_classes
 
-        sc = SentenceClassifier(embedding_size, hidden_size, vocab_size,
-                num_classes)
+        sc = SentenceClassifier(embedding_size, hidden_size, vocab_size, num_classes)
 
         return sc

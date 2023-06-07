@@ -1,9 +1,8 @@
-import os
-
+import numpy as np
 import torch
 import torch.nn as nn
+
 from torch.nn.utils.rnn import pack_padded_sequence
-import numpy as np
 
 class LRCNTrainer:
 
@@ -16,6 +15,7 @@ class LRCNTrainer:
         self.train = args.train
         self.logger = logger
         self.device = device
+        self.eval_filename = "evaluation_{}_{}.txt".format(args.model, args.dataset)
 
         model.to(self.device)
 
@@ -30,11 +30,9 @@ class LRCNTrainer:
             self.curr_epoch = 0
 
         vocab = self.dataset.vocab
-        start_word = torch.tensor([vocab(vocab.start_token)],
-                device=self.device, dtype=torch.long)
+        start_word = torch.tensor([vocab(vocab.start_token)], device=self.device, dtype=torch.long)
         self.start_word = start_word.unsqueeze(0)
-        end_word = torch.tensor([vocab(vocab.end_token)], device=device,
-                dtype=torch.long)
+        end_word = torch.tensor([vocab(vocab.end_token)], device=device, dtype=torch.long)
         self.end_word = end_word.unsqueeze(0)
 
 
@@ -63,8 +61,7 @@ class LRCNTrainer:
                 word_targets = word_targets.to(self.device)
                 word_targets = pack_padded_sequence(word_targets, lengths, batch_first=True)[0]
 
-                loss = self.train_step(image_input, word_inputs, word_targets,
-                        lengths, labels)
+                loss = self.train_step(image_input, word_inputs, word_targets, lengths, labels)
                 result.append(loss.data.item())
 
                 step = self.curr_epoch * self.total_steps + i + 1
@@ -82,13 +79,12 @@ class LRCNTrainer:
                 if self.train:
                     print(", Loss: {:.4f}, Perplexity: {:5.4f}".format(loss.data.item(),
                         np.exp(loss.data.item())), end='', flush=True)
-                    file = open("evaluation.txt", 'a')
+                    file = open(self.eval_filename, 'a')
                     file.write("\nEpoch [{}/{}], Step [{}/{}], Loss: {:.4f}, Perplexity: {:5.4f}".format(
                         self.curr_epoch, self.num_epochs, i, self.total_steps, loss.data.item(),
                         np.exp(loss.data.item())))
                     file.close()
                 print()
-
 
         self.curr_epoch += 1
 
@@ -97,9 +93,7 @@ class LRCNTrainer:
 
         return result
 
-
-    def train_step(self, image_input, word_inputs, word_targets, lengths,
-            *args):
+    def train_step(self, image_input, word_inputs, word_targets, lengths, *args):
         # Forward, Backward and Optimize
         self.model.zero_grad()
         outputs = self.model(image_input, word_inputs, lengths)
@@ -109,7 +103,6 @@ class LRCNTrainer:
         self.optimizer.step()
 
         return loss
-
 
     def eval_step(self, image_input, ids, *args):
         # TODO: max_sampling_length
@@ -127,4 +120,3 @@ class LRCNTrainer:
             generated_captions.append({"image_id": ids[out_idx], "caption": ' '.join(sentence)})
 
         return generated_captions
-
