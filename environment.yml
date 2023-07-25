@@ -1,4 +1,4 @@
-name: gve-lrcn4
+name: gve-lrcn
 channels:
   - pytorch
   - nvidia
