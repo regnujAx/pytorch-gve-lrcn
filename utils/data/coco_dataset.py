@@ -1,16 +1,16 @@
-import os
-from collections import Counter
-from enum import Enum
-import pickle
 import json
-from PIL import Image
-
+import numpy as np
+import os
+import pickle
 import torch
 import torch.utils.data as data
-import numpy as np
+
+from collections import Counter
+from enum import Enum
+from PIL import Image
+
 from pycocotools.coco import COCO
 from pycocoevalcap.eval import COCOEvalCap
-#import nltk
 
 from utils.vocabulary import Vocabulary
 from utils.tokenizer.ptbtokenizer import PTBTokenizer
@@ -80,22 +80,11 @@ class CocoDataset(data.Dataset):
         else:
             self.ids_based_on = cls.ID_BASE.IMAGES
 
-        #images_path = os.path.join(data_path, images_path)
-        #cap_path = os.path.join(data_path, cap_path)
-        # TODO: separate
-        #self.root = os.path.join(root, self.image_path)
-
         self.coco = COCO(self.caption_path)
-        if self.ids_based_on == self.ID_BASE.CAPTIONS:
-            self.ids = list(self.coco.anns.keys())
-        elif self.ids_based_on == self.ID_BASE.IMAGES:
-            self.ids = list(self.coco.imgs.keys())
-        else:
-            raise ValueError("Chosen base for COCO IDs is not implemented")
 
-        #self.load_class_labels(self.labels_path)
+        self.set_ids()
+
         self.return_labels = False
-
         self.vocab = vocab
         self.tokens = tokenized_captions
         self.transform = transform
@@ -106,6 +95,28 @@ class CocoDataset(data.Dataset):
             self.load_class_labels(self.labels_path)
         self.return_labels = return_labels
 
+    def set_ids(self):
+        if self.ids_based_on == self.ID_BASE.CAPTIONS:
+            self.ids = list(self.coco.anns.keys())
+        elif self.ids_based_on == self.ID_BASE.IMAGES:
+            self.ids = list(self.coco.imgs.keys())
+        else:
+            raise ValueError("Chosen base for COCO IDs is not implemented")
+
+    def set_coco_anns(self):
+        anns = dict()
+        imgs = dict()
+
+        for key, value in self.coco.anns.items():
+            if value["image_id"] in self.class_labels:
+                anns[key] = value
+        for key, value in self.coco.imgs.items():
+            if key in self.class_labels:
+                imgs[key] = value
+
+        self.coco.anns = anns
+        self.coco.imgs = imgs
+        self.set_ids()
 
     def load_class_labels(self, category_path, use_supercategories=False):
         coco = COCO(category_path)
@@ -164,7 +175,6 @@ class CocoDataset(data.Dataset):
         coco = self.coco
         vocab = self.vocab
         base_id = self.ids[index]
-        #caption = coco.anns[ann_id]['caption']
 
         if self.ids_based_on == self.ID_BASE.CAPTIONS:
             ann_id = base_id
@@ -175,17 +185,13 @@ class CocoDataset(data.Dataset):
             rand_idx = np.random.randint(len(img_anns))
             ann_id = img_anns[rand_idx]['id']
 
-
         if self.return_labels:
             class_label = self.get_class_label(img_id)
 
         tokens = self.tokens[ann_id]
         image = self.get_image(img_id)
 
-        """
         # Convert caption (string) to word ids.
-        tokens = CocoDataset.tokenize(caption)
-        """
         caption = []
         caption.append(vocab(vocab.start_token))
         caption.extend([vocab(token) for token in tokens])
@@ -196,10 +202,8 @@ class CocoDataset(data.Dataset):
         else:
             return image, target, base_id
 
-
     def __len__(self):
         return len(self.ids)
-
 
     def eval(self, captions, checkpoint_path, score_metric='CIDEr'):
         # TODO: Make strings variables
@@ -214,8 +218,6 @@ class CocoDataset(data.Dataset):
 
         print(cocoEval.eval.items())
         return cocoEval.eval[score_metric]
-
-
 
     @staticmethod
     def collate_fn(data):
@@ -259,8 +261,6 @@ class CocoDataset(data.Dataset):
         else:
             return images, word_inputs, word_targets, lengths, ids
 
-
-
     @classmethod
     def tokenize(cls, caption):
         """
@@ -271,14 +271,12 @@ class CocoDataset(data.Dataset):
         t = PTBTokenizer()
         return t.tokenize_caption(caption)
 
-
     @classmethod
     def build_tokenized_captions(cls, json):
         coco = COCO(json)
         t = PTBTokenizer()
         tokenized_captions = t.tokenize(coco.anns)
         return tokenized_captions
-
 
     @classmethod
     def get_tokenized_captions(cls, caption_path, target_path):
@@ -292,7 +290,6 @@ class CocoDataset(data.Dataset):
                 pickle.dump(tokens, f, protocol=pickle.HIGHEST_PROTOCOL)
             print("Saved the tokenized captions to '{}'".format(target_path))
         return tokens
-
 
     @classmethod
     def build_vocab(cls, json, tokenized_captions, threshold):
@@ -320,7 +317,6 @@ class CocoDataset(data.Dataset):
 
         print("Total vocabulary size: %d" %len(vocab))
         return vocab
-
 
     @classmethod
     def get_vocabulary(cls, vocab_path, captions_path, tokenized_captions, threshold=1):

@@ -43,9 +43,9 @@ def get_args():
                         help="[GVE] weight factor for reinforce loss")
 
     parser.add_argument('--embedding-size', type=int , default=1000,
-                        help='dimension of the word embedding')
+                        help="dimension of the word embedding")
     parser.add_argument('--hidden-size', type=int , default=1000,
-                        help='dimension of hidden layers')
+                        help="dimension of hidden layers")
 
     parser.add_argument('--num-epochs', type=int, default=50)
     parser.add_argument('--batch-size', type=int, default=128)
@@ -55,6 +55,9 @@ def get_args():
                         help="path of checkpoint to be evaluated")
 
     parser.add_argument('--transfer-learning', default=False, action='store_true')
+    parser.add_argument('--cross-validation', type=str,
+                        help="type of cross validation",
+                        choices=['kFold', 'stratifiedKFold'])
 
     args = parser.parse_args()
 

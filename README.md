@@ -105,6 +105,7 @@ hidden_size                   1000
 num_epochs                    50
 batch_size                    128
 learning_rate                 0.001
+cross_validation              None
 train                         True
 eval_ckpt                     None
 ```
@@ -123,6 +124,7 @@ usage: main.py [-h] [--data-path DATA_PATH]
                [--embedding-size EMBEDDING_SIZE] [--hidden-size HIDDEN_SIZE]
                [--num-epochs NUM_EPOCHS] [--batch-size BATCH_SIZE]
                [--learning-rate LEARNING_RATE] [--eval EVAL]
+               [--transfer-learning] [--cross-validation {kFold,stratifiedKFold}]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -160,6 +162,9 @@ optional arguments:
   --batch-size BATCH_SIZE
   --learning-rate LEARNING_RATE
   --eval EVAL           path of checkpoint to be evaluated
+  --transfer-learning
+  --cross-validation {kFold,stratifiedKFold}
+                        type of cross validation
 ```
 
 ## References
