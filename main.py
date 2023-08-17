@@ -14,7 +14,7 @@ from train.trainer_loader import TrainerLoader
 from utils.data.data_prep import DataPreparation
 from utils.logger import Logger
 from utils.misc import get_split_str
- 
+
 import numpy as np
 from sklearn.model_selection import KFold, StratifiedKFold
 
@@ -106,7 +106,7 @@ def train_and_eval(args, model, dataset, data_loader, val_dataset, val_data_load
                 file.write("\nThe model has an evaluation score of {}.\n".format(score))
                 file.close()
 
-    print("\nScore: {}\n\n".format(score))
+    print("\nThe best score is: {}\n\n".format(max_score))
 
     if not args.train and args.model == "sc":
         with open("results.json", "a") as file:
@@ -180,7 +180,7 @@ if __name__ == "__main__":
     logger = Logger(os.path.join(job_path, "logs"))
 
     if args.cross_validation:
-        n_splits=5
+        n_splits = 5
         X, y = list(dataset.class_labels.keys()), list(dataset.class_labels.values())
 
         kf = KFold(n_splits=n_splits) if args.cross_validation == "kFold" else StratifiedKFold(n_splits=n_splits)

@@ -82,7 +82,7 @@ class CocoDataset(data.Dataset):
 
         self.coco = COCO(self.caption_path)
 
-        self.set_ids()
+        self.set_ids(self.coco.anns, self.coco.imgs)
 
         self.return_labels = False
         self.vocab = vocab
@@ -95,11 +95,11 @@ class CocoDataset(data.Dataset):
             self.load_class_labels(self.labels_path)
         self.return_labels = return_labels
 
-    def set_ids(self):
+    def set_ids(self, anns, imgs):
         if self.ids_based_on == self.ID_BASE.CAPTIONS:
-            self.ids = list(self.coco.anns.keys())
+            self.ids = list(anns.keys())
         elif self.ids_based_on == self.ID_BASE.IMAGES:
-            self.ids = list(self.coco.imgs.keys())
+            self.ids = list(imgs.keys())
         else:
             raise ValueError("Chosen base for COCO IDs is not implemented")
 
@@ -114,9 +114,7 @@ class CocoDataset(data.Dataset):
             if key in self.class_labels:
                 imgs[key] = value
 
-        self.coco.anns = anns
-        self.coco.imgs = imgs
-        self.set_ids()
+        self.set_ids(anns, imgs)
 
     def load_class_labels(self, category_path, use_supercategories=False):
         coco = COCO(category_path)
