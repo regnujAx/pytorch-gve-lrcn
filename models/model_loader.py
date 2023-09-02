@@ -42,6 +42,12 @@ class ModelLoader:
 
         if self.args.weights_ckpt:
             gve.load_state_dict(torch.load(self.args.weights_ckpt))
+            if self.args.transfer_learning:
+                # Freezing of the entire network except for the last linear layer
+                for param in gve.parameters():
+                    param.requires_grad = False
+                gve.linear2.weight.requires_grad = True
+                gve.linear2.bias.requires_grad = True
 
         return gve
 

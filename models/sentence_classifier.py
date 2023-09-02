@@ -14,7 +14,6 @@ class SentenceClassifier(nn.Module):
         lstm1_input_size = word_embed_size
 
         self.lstm = nn.LSTM(lstm1_input_size, hidden_size, batch_first=True)
-                #bidirectional=True)
         self.linear = nn.Linear(hidden_size, num_classes)
         self.init_weights()
 
