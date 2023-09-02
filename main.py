@@ -186,20 +186,26 @@ if __name__ == "__main__":
         kf = KFold(n_splits=n_splits) if args.cross_validation == "kFold" else StratifiedKFold(n_splits=n_splits)
         split = kf.split(X) if args.cross_validation == "kFold" else kf.split(X, y)
 
-        for fold, (train_index, test_index) in enumerate(split, 1):
+        print("Use the same model for each cross-validation fold.\n") if args.cv_same_model else print("Use a new model for each cross-validation fold.\n")
+
+        for fold, (train_index, val_index) in enumerate(split, 1):
             print("Fold {}:".format(fold))
             X_train = list(np.array(X)[train_index])
             y_train = list(np.array(y)[train_index])
-            X_test = list(np.array(X)[test_index])
-            y_test = list(np.array(y)[test_index])
+            X_val = list(np.array(X)[val_index])
+            y_val = list(np.array(y)[val_index])
 
             train_set = dict(zip(X_train, y_train))
-            val_set = dict(zip(X_test, y_test))
+            val_set = dict(zip(X_val, y_val))
             dataset.class_labels = train_set
             val_dataset.class_labels = val_set
 
             dataset.set_coco_anns()
             val_dataset.set_coco_anns()
+
+            if not args.cv_same_model:
+                ml = ModelLoader(args, dataset)
+                model = getattr(ml, args.model)()
 
             train_and_eval(args, model, dataset, data_loader, val_dataset, val_data_loader, logger, device, job_path, eval_filename)
     else:

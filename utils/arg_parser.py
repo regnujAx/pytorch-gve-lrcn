@@ -56,8 +56,10 @@ def get_args():
 
     parser.add_argument('--transfer-learning', default=False, action='store_true')
     parser.add_argument('--cross-validation', type=str,
-                        help="type of cross validation",
+                        help="type of cross-validation",
                         choices=['kFold', 'stratifiedKFold'])
+    parser.add_argument('--cv-same-model', default=False, action='store_true',
+                        help="use the same model for all cross-validation folds")
 
     args = parser.parse_args()
 
