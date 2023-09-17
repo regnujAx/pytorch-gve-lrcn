@@ -103,16 +103,19 @@ class CocoDataset(data.Dataset):
         else:
             raise ValueError("Chosen base for COCO IDs is not implemented")
 
-    def set_coco_anns(self):
+    def set_coco_anns_and_imgs(self, dataset):
         anns = dict()
         imgs = dict()
 
-        for key, value in self.coco.anns.items():
+        for key, value in dataset.coco.anns.items():
             if value["image_id"] in self.class_labels:
                 anns[key] = value
-        for key, value in self.coco.imgs.items():
+        for key, value in dataset.coco.imgs.items():
             if key in self.class_labels:
                 imgs[key] = value
+
+        self.coco.anns = anns
+        self.coco.imgs = imgs
 
         self.set_ids(anns, imgs)
 
@@ -206,8 +209,10 @@ class CocoDataset(data.Dataset):
     def eval(self, captions, checkpoint_path, score_metric='CIDEr'):
         # TODO: Make strings variables
         captions_path = checkpoint_path + "-val-captions.json"
+
         with open(captions_path, 'w') as f:
             json.dump(captions, f)
+
         cocoRes = self.coco.loadRes(captions_path)
         cocoEval = COCOEvalCap(self.coco, cocoRes)
         cocoEval.evaluate()
