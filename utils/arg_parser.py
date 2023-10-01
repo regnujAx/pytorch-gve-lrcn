@@ -55,11 +55,14 @@ def get_args():
                         help="path of checkpoint to be evaluated")
 
     parser.add_argument('--transfer-learning', default=False, action='store_true')
+
     parser.add_argument('--cross-validation', type=str,
                         help="type of cross-validation",
                         choices=['kFold', 'stratifiedKFold'])
     parser.add_argument('--cv-same-model', default=False, action='store_true',
-                        help="use the same model for all cross-validation folds")
+                        help="use the same model for all cross-validation splits")
+    parser.add_argument('--cv-num-splits', type=int, default=5,
+                        help="number of splits used for the cross-validation")
 
     args = parser.parse_args()
 

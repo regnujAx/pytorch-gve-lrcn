@@ -111,11 +111,8 @@ def train_and_eval(args, model, dataset, data_loader, val_dataset, val_data_load
                 file.write("\nThe model has an evaluation score of {}.\n".format(score))
                 file.close()
 
-    print("\nThe best score is: {}\n".format(max_score))
-
-    if not args.train and args.model == "sc":
-        with open("results.json", "a") as file:
-            json.dump(result, file)
+    if args.train:
+        print("\nThe best score is: {}\n".format(max_score))
 
 
 if __name__ == "__main__":
@@ -187,7 +184,7 @@ if __name__ == "__main__":
         original_dataset = copy.deepcopy(dataset)
         original_val_dataset = copy.deepcopy(val_dataset)
 
-        n_splits = 5
+        n_splits = args.cv_num_splits
         X, y = list(dataset.class_labels.keys()), list(dataset.class_labels.values())
 
         kf = KFold(n_splits=n_splits) if args.cross_validation == "kFold" else StratifiedKFold(n_splits=n_splits)
@@ -216,7 +213,10 @@ if __name__ == "__main__":
 
             train_and_eval(args, model, dataset, data_loader, val_dataset, val_data_loader, logger, device, job_path, eval_filename, fold)
     else:
-        train_and_eval(args, model, dataset, data_loader, val_dataset, val_data_loader, logger, device, job_path, eval_filename, None)
+        if args.train:
+            train_and_eval(args, model, dataset, data_loader, val_dataset, val_data_loader, logger, device, job_path, eval_filename, None)
+        else:
+            train_and_eval(args, model, dataset, data_loader, None, None, logger, device, job_path, eval_filename, None)
 
     elapsed_time = time.time() - start_time
     time_string = time.strftime("%H:%M:%S", time.gmtime(elapsed_time))
